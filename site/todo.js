@@ -1,6 +1,9 @@
 let inputTask = document.querySelector("#inputTask");
+window.onload = ()=>{inputTask.focus()};
 let addBtn = document.querySelector("#addBtn");
 let listDiv = document.querySelector("#listDiv");
+let divDelete = document.querySelector('#divDelete');
+
 
 function createNewTask(){
     let newLa = document.createElement("label");
@@ -10,6 +13,17 @@ function createNewTask(){
     let newBtn = document.createElement("button");
     let newUl = document.querySelector("#newUl");
     let text;
+    newLi.draggable = true;
+    newLi.addEventListener('dragstart', (e)=>{
+        if(!newInput.checked){
+            e.preventDefault()
+        }
+        else{
+            newLi.classList.add("selected");
+        }
+        
+    });
+    newLi.addEventListener('dragend', ()=>{newLi.classList.remove('selected')});
     function restoreText(){//повертає текст який було стерто(якщо іншого тексту немає) та вихід з редагування
         if(!newSn.textContent.trim()){
             newSn.textContent = text;
@@ -43,7 +57,6 @@ function createNewTask(){
         if(e.code == "Enter"){
             restoreText();
             e.preventDefault();
-            console.log("enter закінчив редагування")
         }
         
     });
@@ -51,7 +64,6 @@ function createNewTask(){
     newSn.addEventListener('click',(e)=>{
         if(newSn.isContentEditable){
             e.preventDefault();
-            console.log("клік не дає стан checked")
         }
     });
 
@@ -66,35 +78,45 @@ function createNewTask(){
     newUl.append(newLi);
 }
 
-addBtn.addEventListener('click', ()=>{
+function addTask(){
     if(!inputTask.value.trim()){  //trim прибирає пробіли по краях
-        inputTask.classList.add("importantEl");
-        inputTask.value = "";
+        valueListTimeout();
         inputTask.focus(); //focus повертає корстувача на поле для вводу
-        setTimeout(()=>inputTask.classList.remove("importantEl"), 10000)
     }
     else{
-        createNewTask();
-        inputTask.value = '';
-        inputTask.focus();
+        inputClearFocusCreateTask();
     }
+}
 
-});
+addBtn.addEventListener('click', addTask);
 
 inputTask.addEventListener("click", ()=>{
     inputTask.classList.remove("importantEl");
 });
 
-inputTask.addEventListener('keydown', function(e){
-    if(e.code == "Enter" && inputTask.value.trim()){
-        createNewTask();
-        inputTask.value = '';
-        inputTask.focus();
-    }
-    if(e.code == "Enter" && !inputTask.value.trim()){
-        inputTask.value = '';
-        inputTask.classList.add("importantEl");
-        setTimeout(()=>inputTask.classList.remove("importantEl"), 10000);
+inputTask.addEventListener('keydown', (e)=>{
+    if(e.code == "Enter"){
+        addTask();
     }
 });
 
+function valueListTimeout(){
+    inputTask.value = "";
+    inputTask.classList.add("importantEl");
+    setTimeout(()=>inputTask.classList.remove("importantEl"), 10000);
+}
+
+function inputClearFocusCreateTask(){
+    createNewTask();
+    inputTask.value = '';
+    inputTask.focus();
+}
+
+
+divDelete.addEventListener('dragover', (evt)=>{
+    evt.preventDefault();
+});
+
+divDelete.addEventListener('drop', ()=>{
+    document.querySelector('.selected').remove();
+})

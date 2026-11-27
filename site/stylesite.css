@@ -75,3 +75,12 @@ span{
     border: none;
 }
 
+#divDelete{
+    background-color: rgb(197, 29, 0);
+    width: 200px;
+    height: 200px;
+}
+
+.selected{
+    opacity: .5;
+}
